@@ -1,1 +1,1 @@
-# GoSBot
+# WBot
