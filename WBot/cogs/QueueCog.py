@@ -1,4 +1,5 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 from util import load_db
 
@@ -8,10 +9,17 @@ class QueueCog(commands.Cog):
     def __init__(self, bot):
         res = supabase.table('queue').select('discord_id, name').execute()
         self.queue = [x['discord_id'] for x in res.data]
-    
+        self.queue_msg = None
+        
     @commands.hybrid_command(name="queue", aliases=["lobby", "q"])
     async def _queue(self, ctx):
         """ View the queue """
+        if self.queue_msg is not None:
+            try:
+                await self.queue_msg.delete()
+            except Exception:
+                pass
+        
         server = ctx.guild
         message = ""
         for place, member_id in enumerate(self.queue):
@@ -23,10 +31,16 @@ class QueueCog(commands.Cog):
 
         embed = discord.Embed(description=message, color=discord.Color.blue())
         embed.set_footer(text="Join the queue with !add / Leave the queue with !leave")
-        await ctx.send(embed=embed)
+        self.queue_msg = await ctx.send(embed=embed)
+
+        # Attempt to delete user message if possible
+        try:
+            await ctx.message.delete()
+        except Exception:
+            pass
     
-    @commands.hybrid_command(name="add", aliases=["join"])
-    async def add(self, ctx, member: discord.Member = None):
+    @commands.hybrid_command(name="join", aliases=["add"])
+    async def join(self, ctx, member: discord.Member = None):
         """ Add yourself to the queue """
         target_user = ctx.message.author
         if member:
@@ -44,8 +58,8 @@ class QueueCog(commands.Cog):
         
         await ctx.invoke(self._queue)
     
-    @commands.hybrid_command(name="remove", aliases=["leave", "drop"])
-    async def remove(self, ctx, member: discord.Member = None):
+    @commands.hybrid_command(name="drop", aliases=["leave", "remove"])
+    async def drop(self, ctx, member: discord.Member = None):
         """ Remove yourself from the queue """
         target_user = ctx.message.author
         if member:
