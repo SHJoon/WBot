@@ -81,7 +81,7 @@ class UtilityCog(commands.Cog):
 
     @commands.hybrid_command(name="captains")
     async def captains(self, ctx):
-        """ Randomizes captains list from General Voice channel"""
+        """ Randomizes captains list from the current voice channel"""
         members = ctx.message.author.voice.channel.members
         random.shuffle(members)
         message = ""

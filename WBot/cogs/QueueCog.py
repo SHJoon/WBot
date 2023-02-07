@@ -10,7 +10,8 @@ class QueueCog(commands.Cog):
         res = supabase.table('queue').select('discord_id, name').execute()
         self.queue = [x['discord_id'] for x in res.data]
         self.queue_msg = None
-        
+        self.queue_time = 'None set yet'
+
     @commands.hybrid_command(name="queue", aliases=["lobby", "q"])
     async def _queue(self, ctx):
         """ View the queue """
@@ -21,7 +22,7 @@ class QueueCog(commands.Cog):
                 pass
         
         server = ctx.guild
-        message = ""
+        message = f"**Gaming time**: {self.queue_time}\n"
         for place, member_id in enumerate(self.queue):
             member = discord.utils.get(server.members, id=member_id)
             name = member.nick if member.nick else member.name
@@ -98,8 +99,14 @@ class QueueCog(commands.Cog):
         
         await ctx.send(message)
     
-    @commands.hybrid_command(name="finna", aliases=["leggo"])
-    async def finna(self, ctx):
+    @commands.hybrid_command(name="queuetime", aliases=['qtime'])
+    async def queuetime(self, ctx, _time):
+        """ Assign game time """
+        self.queue_time = _time
+    
+    @commands.hybrid_command(name="leggo")
+    async def leggo(self, ctx, _time = "None set yet"):
         """ Get a game going """
+        self.queue_time = _time
         await ctx.send("Where the shooters at? @here")
         await ctx.invoke(self._queue)
