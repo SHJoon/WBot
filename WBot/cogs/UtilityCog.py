@@ -33,17 +33,19 @@ class UtilityCog(commands.Cog):
 
         if ranflip == "Heads":
             pics_url = [
-                "https://cdn.discordapp.com/attachments/688598474861707304/689666020834803712/unknown.png",
-                "https://cdn.discordapp.com/attachments/602376454491078659/659905323217322021/image0.jpg"
+                # "https://cdn.discordapp.com/attachments/688598474861707304/689666020834803712/unknown.png",
+                # "https://cdn.discordapp.com/attachments/602376454491078659/659905323217322021/image0.jpg"
+                "https://cdn.discordapp.com/attachments/552758326916677642/693143400303689808/image0-252.jpg"
             ]
             ranpic = random.choice(pics_url)
             embed.set_image(url=ranpic)
             embed.colour = discord.Colour.orange()
         elif ranflip == "Tails":
             pics_url = [
-                "https://cdn.discordapp.com/attachments/623390018991292426/681340369912201264/tails_gif.gif",
-                "https://cdn.discordapp.com/attachments/623390018991292426/680682916220895276/unknown.png",
-                "https://cdn.discordapp.com/attachments/663534641164320801/663956797048225804/unknown.png"
+                # "https://cdn.discordapp.com/attachments/623390018991292426/681340369912201264/tails_gif.gif",
+                # "https://cdn.discordapp.com/attachments/623390018991292426/680682916220895276/unknown.png",
+                # "https://cdn.discordapp.com/attachments/663534641164320801/663956797048225804/unknown.png"
+                "https://cdn.discordapp.com/attachments/552758326916677642/693131064859951124/anees.jpg"
             ]
             ranpic = random.choice(pics_url)
             embed.set_image(url=ranpic)

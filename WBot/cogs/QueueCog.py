@@ -85,6 +85,46 @@ class QueueCog(commands.Cog):
         self.queue.clear()
         supabase.table('queue').delete()
         await ctx.send("Queue has been cleared")
+    
+    @commands.hybrid_command(name="ready", aliases=['go'])
+    async def ready(self, ctx):
+        """ Call this when 10 people are ready """
+        if len(self.queue) < 10:
+            await ctx.send("Not enough people in the queue...")
+            return
+        
+        msg = ""
+        for i in range(10):
+            member = discord.utils.get(ctx.guild.members, id=self.queue[i])
+            msg += member.mention
+            supabase.table('queue').delete().eq('discord_id', self.queue[i]).execute()
+        for i in range(10):
+            self.queue.pop(0)
+        await ctx.send(msg)
+        await ctx.send("GAMING TIME LET'S GOOOOO")
+
+        await ctx.invoke(self._queue)
+
+    @commands.hybrid_command(name="next")
+    async def _next(self, ctx, num=1):
+        """ Call the next member in the queue """
+        if len(self.queue) == 0:
+            await ctx.send("No one left in the queue :(")
+            return
+        
+        if num > len(self.queue):
+            num = len(self.queue)
+        
+        msg = ""
+        for i in range(num):
+            member = discord.utils.get(ctx.guild.members, id=self.queue[i])
+            msg += f"You're up **{member.mention}**! Have fun!\n"
+            supabase.table('queue').delete().eq('discord_id', self.queue[i]).execute()
+        for i in range(num):
+            self.queue.pop(0)
+        
+        await ctx.send(msg)
+        await ctx.invoke(self._queue)
 
     @commands.hybrid_command(name="ping_queue", aliases=['pingq', 'pq'])
     async def ping_queue(self, ctx):
@@ -100,13 +140,14 @@ class QueueCog(commands.Cog):
         await ctx.send(message)
     
     @commands.hybrid_command(name="queuetime", aliases=['qtime'])
-    async def queuetime(self, ctx, _time):
+    async def queuetime(self, ctx, time:str):
         """ Assign game time """
-        self.queue_time = _time
+        self.queue_time = time
+        await ctx.invoke(self._queue)
     
     @commands.hybrid_command(name="leggo")
-    async def leggo(self, ctx, _time = "None set yet"):
+    async def leggo(self, ctx, time = "None set yet"):
         """ Get a game going """
-        self.queue_time = _time
+        self.queue_time = time
         await ctx.send("Where the shooters at? @here")
         await ctx.invoke(self._queue)
