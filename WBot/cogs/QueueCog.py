@@ -83,7 +83,7 @@ class QueueCog(commands.Cog):
     async def clear(self, ctx):
         """ Clears the queue """
         self.queue.clear()
-        supabase.table('queue').delete()
+        supabase.table('queue').delete().neq('discord_id', 0).execute()
         await ctx.send("Queue has been cleared")
     
     @commands.hybrid_command(name="ready", aliases=['go'])
